@@ -55,12 +55,12 @@ The original Julia implementation was adapted where necessary for integration wi
 
 The repository is organized into four main directories:
 ---
-LD_in_NN_Hamiltonian/
-│
-├── GHNN/ # Python implementation of GHNN, SympNet, and HénonNet
-├── RC/ # Julia implementation of Reservoir Computing models
-├── Postprocessing/ # Lagrangian Descriptor computation and analysis tools
-├── Dataset/ # Training and evaluation datasets used in the study
+LD_in_NN_Hamiltonian/<br>
+│<br>
+├── GHNN/ # Python implementation of GHNN, SympNet, and HénonNet<br>
+├── RC/ # Julia implementation of Reservoir Computing models<br>
+├── Postprocessing/ # Lagrangian Descriptor computation and analysis tools<br>
+├── Dataset/ # Training and evaluation datasets used in the study<br>
 └── README.md
 
 ### Directory Description
