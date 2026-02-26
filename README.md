@@ -15,7 +15,7 @@ The neural network architectures themselves are **not developed from scratch** i
 This repository contains implementations in **two programming languages**:
 
 - **Python** – used for the Generalized Hamiltonian Neural Network (GHNN), SympNet, and HénonNet models.
-- **Julia** – used for the Reservoir Computing (RC) models.
+- **Julia** – used for the Reservoir Computing (RC) models and the postprocessing.
 
 Please ensure that both Python and Julia environments are properly configured if you intend to reproduce all experiments.
 
