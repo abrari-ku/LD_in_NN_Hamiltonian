@@ -5,7 +5,7 @@ using ReservoirComputing
 
 const date_format = "yyyy-mm-dd HH:MM:SS"
 
-# Function to log progress at regular intervals
+# Log progress every `log_interval` iterations (and on completion).
 function log_progress(counter::Int, total::Int, desc::String, log_interval::Int=5000)
     if counter % log_interval == 0 || counter == total
         progress_percent = round(counter / total * 100, digits=2)
@@ -13,7 +13,8 @@ function log_progress(counter::Int, total::Int, desc::String, log_interval::Int=
     end
 end
 
-# function to read the RC model 
+# Read RC/ESN model parameters and weights from an HDF5 group.
+# Supports both sparse triplet format (I, J, V) and dense matrix storage.
 function read_model(model,test_data; leaky = 1.0)
     res_size = read_attribute(model,"res_size")
     if haskey(model["input_matrix"],"I")
@@ -44,12 +45,16 @@ function read_model(model,test_data; leaky = 1.0)
     return esn,W_out,W_out_rev
 end
 
+# Distance metric used in LD calculation (first two state components only).
 function distance_vector(u1,u2,p = 1)
 
     d_a = (sum((abs.(u1[1:2]-u2[1:2])).^p))
     return d_a
 end
 
+# ----------------------------
+# Grid and runtime parameters
+# ----------------------------
 nx = 400
 ny = 400
 xg = [LinRange(-1.5, 1.5,nx)...]
@@ -70,12 +75,15 @@ i1 = findlast(",",alp)
 α = parse(Float64,alp[i1[1]+1:end-1])
 esn_cycle_c,W_out_cycle_c,W_out_cycle_c_back = read_model(QP_esn,test1,leaky = α);
 
-# tend = 4
+# Number of generated time points per trajectory.
 Nt = Int(tend/dt) + 1
 step = step_mult
 group_name = "LD_eq_inf_$(RCmodel)_t_end_$(tend)_gamma_$(γ)_dtm_$(step_mult)_squared"
 @info "group output name: $group_name"
 
+# ----------------------------
+# Forward LD pass
+# ----------------------------
 @info "Model loaded, beginning computation at $(Dates.format(now(), date_format))"
 start_time_fwd = time()
 @info "Starting forward computation with $(160000) tests"
@@ -94,7 +102,9 @@ end
 LD_reshaped = reshape(LD, 400, 400)
 
 
-
+# ----------------------------
+# Backward LD pass
+# ----------------------------
 @info "Starting backward computation with $(160000) tests"
 LDb = Array{Float64}(undef,160000)
 
@@ -114,6 +124,9 @@ total_runtime = end_time - start_time_fwd
 
 LDb_reshaped = reshape(LDb, 400, 400)
 
+# ----------------------------
+# Save results and metadata
+# ----------------------------
 @info "Writing results to HDF5 file at $(Dates.format(now(), date_format))"
 save_start = time()
 
